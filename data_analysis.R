@@ -12,6 +12,7 @@ rb <- c()
 mb <- c()
 do <- c()
 os <- c()
+plots <- c()
 
 # Iterate over each CSV file
 for (file in csv_files) {
@@ -79,3 +80,49 @@ for (i in seq_along(csv_files)) {
            tau[i],all_p_values[i],holm_corrected_p_values[i])
   cat(paste(row, collapse = ","),"\n")
 }
+cat("\n")
+cat("Language,Family,Lmin,L,Lr,η,Ω\n")
+for (i in seq_along(csv_files)) {
+  language_data <- data[data$Language == toTitleCase(names[i]),]
+  row <- c(toTitleCase(names[i]),language_data$Family,mb[i],mwl[i],
+           rb[i],do[i],os[i])
+  cat(paste(row, collapse = ","),"\n")
+}
+
+library(ggplot2)
+library(ggrepel)
+library(dplyr)
+
+langs <- c(1,2,16,8,5,6)
+index <- 1
+
+i <- langs[index]
+data <- read.csv(csv_files[i])
+merged_files <- mutate(data, Language = toTitleCase(names[i]))
+print(toTitleCase(names[i]))
+index <- index + 1
+
+while (index <= length(langs)) {
+  i <- langs[index]
+  data <- read.csv(csv_files[i])
+  merged_files <- rbind(merged_files, mutate(data, Language = toTitleCase(names[i])))
+  print(toTitleCase(names[i]))
+  index <- index + 1
+}
+
+
+p <- ggplot(merged_files, aes(x = Length, y = Frequency, label = Token)) +
+  geom_point() +
+  geom_text_repel() +
+  facet_wrap( ~ Language, ncol=3, nrow=3)
+
+print(p)
+
+data <- data.frame(Language = names, Lmin = mb, Lr = rb, L = mwl)
+
+p <- ggplot(data, aes(x = Lr, y = L, size = Lmin)) +
+  geom_point() +
+  geom_text_repel(aes(label = Language), size = 4, box.padding = 0.5, min.segment.length = 0.75)
+  
+
+print(p)

@@ -70,7 +70,7 @@ for (i in seq_along(csv_files)) {
   cat("\n")
 }
 
-data <- read.csv("language_data.csv",sep=";")
+data <- read.csv("data/language_data.csv",sep=";")
 library(tools)
 
 cat("Language,Family,Tokens,Types,Tau,p-value,Corrected p-value\n")

@@ -1,3 +1,5 @@
 myenv/
 .ipynb_checkpoints/
 .Rproj.user
+.RData
+.RHistory

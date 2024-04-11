@@ -1,5 +1,5 @@
 # Get a list of all CSV files starting with "output_"
-csv_files <- list.files(pattern = "^output_.*\\.csv$")
+csv_files <- list.files(path="code/data",pattern = "^output_.*\\.csv$")
 
 # Initialize vectors to store all values
 names <- c()
@@ -17,7 +17,7 @@ plots <- c()
 # Iterate over each CSV file
 for (file in csv_files) {
   # Read data from CSV file
-  data <- read.csv(file)
+  data <- read.csv(paste("code/data/",file,sep=""))
   
   names <- c(names, gsub("output_|\\.csv", "", file))
   lengths <- data$Length
@@ -70,22 +70,22 @@ for (i in seq_along(csv_files)) {
   cat("\n")
 }
 
-data <- read.csv("data/language_data.csv",sep=";")
+data <- read.csv("code/data/language_data.csv",sep=";")
 library(tools)
 
 cat("Language,Family,Tokens,Types,Tau,p-value,Corrected p-value\n")
 for (i in seq_along(csv_files)) {
   language_data <- data[data$Language == toTitleCase(names[i]),]
   row <- c(toTitleCase(names[i]),language_data$Family,tokens[i],types[i],
-           tau[i],all_p_values[i],holm_corrected_p_values[i])
+           format(tau[i], scientific = FALSE, digits = 3),format(all_p_values[i], scientific = TRUE, digits = 3),format(holm_corrected_p_values[i], scientific = TRUE, digits = 3))
   cat(paste(row, collapse = ","),"\n")
 }
 cat("\n")
 cat("Language,Family,Lmin,L,Lr,η,Ω\n")
 for (i in seq_along(csv_files)) {
   language_data <- data[data$Language == toTitleCase(names[i]),]
-  row <- c(toTitleCase(names[i]),language_data$Family,mb[i],mwl[i],
-           rb[i],do[i],os[i])
+  row <- c(toTitleCase(names[i]),language_data$Family,format(mb[i], scientific = FALSE, digits = 3),format(mwl[i], scientific = FALSE, digits = 3),
+           format(rb[i], scientific = FALSE, digits = 3),format(do[i], scientific = FALSE, digits = 3),format(os[i], scientific = FALSE, digits = 3))
   cat(paste(row, collapse = ","),"\n")
 }
 
@@ -97,14 +97,14 @@ langs <- c(1,2,16,8,5,6)
 index <- 1
 
 i <- langs[index]
-data <- read.csv(csv_files[i])
+data <- read.csv(paste("code/data/",csv_files[i],sep=""))
 merged_files <- mutate(data, Language = toTitleCase(names[i]))
 print(toTitleCase(names[i]))
 index <- index + 1
 
 while (index <= length(langs)) {
   i <- langs[index]
-  data <- read.csv(csv_files[i])
+  data <- read.csv(paste("code/data/",csv_files[i],sep=""))
   merged_files <- rbind(merged_files, mutate(data, Language = toTitleCase(names[i])))
   print(toTitleCase(names[i]))
   index <- index + 1
